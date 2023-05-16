@@ -47,7 +47,7 @@ def run(config_file=None,sim=None,conf=None):
 
     #plotting
     window_size = 1000
-    pops = ['Bladaff','PGN','PAGaff','EUSmn','INmminus','INmplus','IND', 'IMG', 'FB']
+    pops = ['Bladaff','PGN','PAGaff','EUSaff','INmminus','INmplus','IND', 'IMG', 'FB']
     windows = [window_size]*len(pops)
     means = {}
     stdevs = {}

@@ -63,7 +63,7 @@ class FeedbackLoop(SimulatorMod):
             # events mimicking a synapse. For this simple example each cell recieves only 1 virtual synapse/netcon.
             # To have more than 1 netcon in each cell you can add an extra internal loop, and _synapses and _netcons
             # will be a dictionary of lists
-            if isinstance(cell, BioCell) and gid < 20: ################################################################## CHANGE TO , 20 FOR PAG
+            if isinstance(cell, BioCell) and gid < 30: ################################################################## CHANGE TO , 20 FOR PAG
                 # For biophysicaly detailed cells we use an Synapse object that is placed at the soma. If you want to
                 # place it at somewhere different than the soma you can use the following code:
                 #   seg_x, sec_obj = cell.morphology.find_sections(
@@ -97,31 +97,31 @@ class FeedbackLoop(SimulatorMod):
         #### BLADDER EQUATIONS ####    
     # Grill, et al. 2016
         def blad_vol(vol):
-            f = 1.5*100*vol #- 1.5 #-10 #math.exp(48*vol-64.9) + 8
+            f = 44*vol #- 1.5 #-10 #math.exp(48*vol-64.9) + 8
             return f
 
         # Grill function returning pressure in units of cm H20
 	    # Grill, et al. 2016
         def pressure(PGN,v,IMG):
-            p = 0.6*PGN +  1.0*v - 0.1*IMG + 9
-            print("p = 0.7*{0} + 7*{1} - 0.7*{2}".format(PGN, v, IMG))
-            p = max(p,0.0)
+            p = 0.6*PGN +  1.0*v - 0.1*IMG + 7
+            #print("p = 0.7*{0} + 7*{1} - 0.7*{2}".format(PGN, v, IMG))
+            p = max(p,6.0)
             return p 
 
         # Grill function returning bladder afferent firing rate in units of Hz
 	    # Grill, et al. 2016
         def blad_aff_fr(p):
-            fr1 = -3.0E-08*p**5 + 1.0E-5*p**4 - 1.5E-03*p**3 + 7.9E-02*p**2 - 0.6*p
-#            p_mmHg = 0.735559*p
-#            
-#            if p_mmHg < 5:
+            p = 0.735559*p #change to mmHg
+            fr1 = 1.0E-06*p**4 - 0.0003*p**3 + 0.0268*p**2 - 0.5803*p + 2.7887
+            
+#            if p < 30.0:
 #                fr1 = 0
-#            elif p_mmHg < 10:
-#                fr1 = 0.3*p_mmHg
-#            elif p_mmHg < 30:
-#                fr1 = 0.9*p_mmHg - 6
+#            elif p < 40.0:
+#                fr1 = 0.5*p - 15
+#            elif p < 50.0:
+#                fr1 = 0.25*p - 5
 #            else:
-#                fr1 = -3.0E-08*p**5 + 1.0E-5*p**4 - 1.5E-03*p**3 + 7.9E-02*p**2 - 0.6*p
+#                fr1 = 1.0E-06*p**4 - 0.0003*p**3 + 0.0268*p**2 - 0.5803*p + 2.7887 #tuning curve that is not very accurate at low pressures
             fr1 = max(fr1,0.0)
             return fr1 # Using scaling factor of 5 here to get the correct firing rate range
 
@@ -164,7 +164,7 @@ class FeedbackLoop(SimulatorMod):
         v_init = 0.0       # TODO: get biological value for initial bladder volume
         fill = 0.1 	 	# ml/min (Asselt et al. 2017) 175 microL / min  Herrara 2010 for rat baseline 
         fill /= (1000 * 60) # Scale from ml/min to ml/ms
-        void = 1.2		# 4.344 ml/min approximated from Herrera 2010; can also use 4.6 ml/min (Streng et al. 2002)
+        void = 1.2	# 4.344 ml/min approximated from Herrera 2010; can also use 4.6 ml/min (Streng et al. 2002)
         void /= (1000 * 60) # Scale from ml/min to ml/ms
         max_v = 0.2 	# 1.65 ml based of Herrara 2010; 1.5 ml (Grill et al. 2019) #0.76
         vol = v_init
@@ -179,7 +179,7 @@ class FeedbackLoop(SimulatorMod):
             prev_vol = self.b_vols[-1]
         
         # To switch back from voiding to filling
-        if prev_vol == v_init:
+        if prev_vol < 0.13:
             self.void = False
             self.fill = True 
             
@@ -249,7 +249,43 @@ class FeedbackLoop(SimulatorMod):
                 for t in spikes:
                     nc.event(t)
                     
-        if self.blad_fr > 10 and vol > 0.02:
+                      
+        # EUS Aff Firing Rate Update
+        if p > 14.5 and (next_block_tstart/1000).is_integer() and self.void == False:
+          print("!!! EUS FIRING ACTIVATED AT {0} HZ!!!".format(155*(vol - 0.1) + 2))
+          
+          psg = PoissonSpikeGenerator()
+          psg.add(
+              node_ids= [0,1,2,3,4,5,6,7,8,9],
+              firing_rate=  75*(vol - 0.1) + 2, #2500*((vol-0.1)**2)+5,
+              times=(next_block_tstart/1000.0 + 0.01, next_block_tstop/1000.0),
+              population= 'EUSaff',
+          )
+      
+          psg.add_spikes([0,1,2,3,4,5,6,7,8,9], [next_block_tstop, next_block_tstop, next_block_tstop, next_block_tstop, next_block_tstop, next_block_tstop, next_block_tstop,       next_block_tstop, next_block_tstop, next_block_tstop], population = "EUSaff")
+          psg.to_csv("spikes_eus.csv")
+
+          for gid, cell in sim.net.get_local_cells().items():
+              if gid < 30 and gid > 19:
+                  spikes = psg.get_times(gid - 20, population='EUSaff')
+                  spikes = np.sort(spikes)
+                  #print("HEllo: \n {0}".format(spikes))
+                  if len(spikes) == 0:
+                      continue
+
+          # The next block of code is where we update the incoming/virtual spike trains for each cell, by adding
+          # each spike to the cell's netcon (eg synapse). The only caveats is the spike-trains array must
+          #  1. Have atleast one spike
+          #  2. Be sorted
+          #  3. first spike must occur after the delay.
+          # Otherwise an error will be thrown.
+                  self._spike_events[gid] = np.concatenate((self._spike_events[gid], spikes))
+                  nc = self._netcons[gid]
+                  for t in spikes:
+                      nc.event(t)
+        
+        # PAG /VOIDING kind of            
+        if p > 55 and vol > 0.15:
             io.log_info("!!!PAG FIRING ACTIVATED!!!")
             self.pag_fr = 15
             
@@ -292,37 +328,6 @@ class FeedbackLoop(SimulatorMod):
                     nc = self._netcons[gid]
                     for t in spikes:
                         nc.event(t)
-            
-#            # EUS Aff Firing Rate Update
-#            psg = PoissonSpikeGenerator()
-#            psg.add(
-#                node_ids= [0,1,2,3,4,5,6,7,8,9],
-#                firing_rate= self.pag_fr,
-#                times=(next_block_tstart/1000.0 + 0.01, next_block_tstop/1000.0),
-#                population= 'EUSaff',
-#            )
-#        
-#            psg.add_spikes([0,1,2,3,4,5,6,7,8,9], [next_block_tstop, next_block_tstop, next_block_tstop, next_block_tstop, next_block_tstop, next_block_tstop, next_block_tstop,       next_block_tstop, next_block_tstop, next_block_tstop], population = "EUSaff")
-#            psg.to_csv("spikes_eus.csv")
-#
-#            for gid, cell in sim.net.get_local_cells().items():
-#                if gid < 30 and gid > 19:
-#                    spikes = psg.get_times(gid - 20, population='EUSaff')
-#                    spikes = np.sort(spikes)
-#                    #print("HEllo: \n {0}".format(spikes))
-#                    if len(spikes) == 0:
-#                        continue
-#
-#            # The next block of code is where we update the incoming/virtual spike trains for each cell, by adding
-#            # each spike to the cell's netcon (eg synapse). The only caveats is the spike-trains array must
-#            #  1. Have atleast one spike
-#            #  2. Be sorted
-#            #  3. first spike must occur after the delay.
-#            # Otherwise an error will be thrown.
-#                    self._spike_events[gid] = np.concatenate((self._spike_events[gid], spikes))
-#                    nc = self._netcons[gid]
-#                    for t in spikes:
-#                        nc.event(t)
         else:
             self.pag_fr = 0
 

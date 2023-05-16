@@ -213,7 +213,7 @@ conn = net.add_edges(source=net.nodes(pop_name='Bladaff'), target=net.nodes(pop_
 				
 conn.add_properties(names=['syn_weight', 'sec_id', 'sec_x'],
                     rule=conn_props,
-                    rule_params={'mu':3.0e-3,'sigma':1},
+                    rule_params={'mu':3.0e-3,'sigma':1}, # was 10e-3
                     dtypes=[np.float, np.int32, np.float])
 
  # Blad afferent --> Hypogastric (Hou et al. 2014)
@@ -246,20 +246,20 @@ conn.add_properties(names=['syn_weight', 'sec_id', 'sec_x'],
                     rule_params={'mu':1.0e-3,'sigma':1},
                     dtypes=[np.float, np.int32, np.float])
 
-# PAG afferent --> INd (Grill et al. 2016)
-conn = net.add_edges(source=net.nodes(pop_name='PAGaff'), target=net.nodes(pop_name='IND'),
-                   connection_rule=percent_connector,
-                   connection_params={'percent':100.0},
-                   target_sections=['somatic'],
-                   delay=2.0,
-                   distance_range=[0.0, 300.0],
-                   dynamics_params='AMPA_ExcToExc.json',
-                   model_template='Exp2Syn')
-
-conn.add_properties(names=['syn_weight', 'sec_id', 'sec_x'],
-                    rule=conn_props,
-                    rule_params={'mu':5.0e-3,'sigma':1},  # was 20.0e-3
-                    dtypes=[np.float, np.int32, np.float])
+## PAG afferent --> INd (Grill et al. 2016)
+#conn = net.add_edges(source=net.nodes(pop_name='PAGaff'), target=net.nodes(pop_name='IND'),
+#                   connection_rule=percent_connector,
+#                   connection_params={'percent':100.0},
+#                   target_sections=['somatic'],
+#                   delay=2.0,
+#                   distance_range=[0.0, 300.0],
+#                   dynamics_params='AMPA_ExcToExc.json',
+#                   model_template='Exp2Syn')
+#
+#conn.add_properties(names=['syn_weight', 'sec_id', 'sec_x'],
+#                    rule=conn_props,
+#                    rule_params={'mu':5.0e-3,'sigma':1},  # was 20.0e-3
+#                    dtypes=[np.float, np.int32, np.float])
 
 # INd --> PGN (Grill et al. 2016)
 conn = net.add_edges(source=net.nodes(pop_name='IND'), target=net.nodes(pop_name='PGN'),
@@ -364,7 +364,7 @@ conn = net.add_edges(source=net.nodes(pop_name='INmplus'), target=net.nodes(pop_
 
 conn.add_properties(names=['syn_weight', 'sec_id', 'sec_x'],
                     rule=conn_props,
-                    rule_params={'mu':1.0e-3,'sigma':1},
+                    rule_params={'mu':2.0e-3,'sigma':1}, # was 1e-3
                     dtypes=[np.float, np.int32, np.float])
 
 # INm- --> PGN (Grill et al. 2016)
@@ -379,7 +379,7 @@ conn = net.add_edges(source=net.nodes(pop_name='INmminus'), target=net.nodes(pop
 
 conn.add_properties(names=['syn_weight', 'sec_id', 'sec_x'],
                     rule=conn_props,
-                    rule_params={'mu':20.0e-3,'sigma':1},
+                    rule_params={'mu':15.0e-3,'sigma':1}, # was 20e-3
                     dtypes=[np.float, np.int32, np.float])
 
 # PGN --> MPG (Beckel et al. 2015)
@@ -457,20 +457,20 @@ conn.add_properties(names=['syn_weight', 'sec_id', 'sec_x'],
                     # rule_params={'mu':10.0e-3,'sigma':1},
                     # dtypes=[np.float, np.int32, np.float])
 
-# PAG aff --> Hypogastric (de Groat, et al. 2015)
-conn = net.add_edges(source=net.nodes(pop_name='PAGaff'), target=net.nodes(pop_name='Hypo'),
-                    connection_rule=percent_connector,
-                    connection_params={'percent':100.0},
-                    target_sections=['somatic'],
-                    delay=2.0,
-                    distance_range=[0.0, 300.0],
-                    dynamics_params='GABA_InhToInh.json',
-                    model_template='Exp2Syn')
-
-conn.add_properties(names=['syn_weight', 'sec_id', 'sec_x'],
-                     rule=conn_props,
-                     rule_params={'mu':12.0e-3,'sigma':1},
-                     dtypes=[np.float, np.int32, np.float])
+## PAG aff --> Hypogastric (de Groat, et al. 2015)
+#conn = net.add_edges(source=net.nodes(pop_name='PAGaff'), target=net.nodes(pop_name='Hypo'),
+#                    connection_rule=percent_connector,
+#                    connection_params={'percent':100.0},
+#                    target_sections=['somatic'],
+#                    delay=2.0,
+#                    distance_range=[0.0, 300.0],
+#                    dynamics_params='GABA_InhToInh.json',
+#                    model_template='Exp2Syn')
+#
+#conn.add_properties(names=['syn_weight', 'sec_id', 'sec_x'],
+#                     rule=conn_props,
+#                     rule_params={'mu':12.0e-3,'sigma':1},
+#                     dtypes=[np.float, np.int32, np.float])
 
 # PAG aff --> EUS MN (Shefchyk et al. 2001)
 # conn = net.add_edges(source=net.nodes(pop_name='PAGaff'), target=net.nodes(pop_name='EUSmn'),

@@ -30,7 +30,7 @@ def plot_figure(means, stdevs, n_steps, dt, tstep=100, fbmod=None, savefig=True)
     fig2 = plt.figure()
     plt.plot(t, means['Bladaff'][ind], color='b', marker='^', mfc='b', mec='b', label='Bladder Afferent')
     plt.plot(t, means['PGN'][ind], color='g', marker='o', mfc='g', mec='g', label='PGN')
-    plt.plot(t, means['PAGaff'][ind], color='r', marker='D', mfc='r', mec='r', label='PAG')
+    #plt.plot(t, means['PAGaff'][ind], color='r', marker='D', mfc='r', mec='r', label='PAG')
     plt.plot(t, means['FB'][ind], color='k', marker='D', mfc='k', mec='k', label='FB')
     plt.plot(t, means['IMG'][ind], color='y', marker='^', mfc='y', mec='y', label='IMG')
 
@@ -41,7 +41,7 @@ def plot_figure(means, stdevs, n_steps, dt, tstep=100, fbmod=None, savefig=True)
 
     fig3 = plt.figure()
     plt.plot(t, means['INmminus'][ind], color='b', marker='^', mfc='b', mec='b', label='INm-')
-    plt.plot(t, means['EUSmn'][ind], color='m', marker='^', mfc='m', mec='m', label='EUS Afferent')
+    plt.plot(t, means['EUSaff'][ind], color='m', marker='^', mfc='m', mec='m', label='EUS Afferent')
     plt.plot(t, means['IND'][ind], color='r', marker='^', mfc='r', mec='r', label='IND')
     plt.plot(t, means['INmplus'][ind], color='g', marker='^', mfc='g', mec='g', label='INm+')
 

@@ -1,8 +1,8 @@
 {
   "target_simulator": "NEURON",
   "run": {
-    "nsteps_block": 5000,
-    "tstop": 60500.0,
+    "nsteps_block": 2500,
+    "tstop": 100500.0,
     "dt": 0.2,
     "dL": 9999,
     "spike_threshold": 0.0
@@ -78,8 +78,8 @@
     }
   },
   "network": "./circuit_config.json",
-  "config_path": "/home/ifbdtk/LUT_SCI_Hunter/LUT_Baseline/jsons/simulation_config.json",
-  "config_dir": "/home/ifbdtk/LUT_SCI_Hunter/LUT_Baseline/jsons",
+  "config_path": "/home/ifbdtk/LUT_SCI_Mouse/LUT_Baseline/jsons/simulation_config.json",
+  "config_dir": "/home/ifbdtk/LUT_SCI_Mouse/LUT_Baseline/jsons",
   "components": {
     "point_neuron_models_dir": "./biophys_components/point_neuron_templates",
     "biophysical_neuron_models_dir": "./biophys_components/biophysical_neuron_templates",
