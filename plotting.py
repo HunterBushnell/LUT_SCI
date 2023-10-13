@@ -1,18 +1,23 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import scienceplots
+import matplotlib
 
 plt.style.use('ieee')
+matplotlib.rcParams.update({'font.size': 24})
 
 
 def plot_figure(means, stdevs, n_steps, dt, tstep=100, fbmod=None, savefig=True):
     #Plot bladder volume and bladder pressure
     if fbmod is not None:
-        fig1, ax1_1 = plt.subplots(figsize=(9,3))
+        fig1, ax1_1 = plt.subplots(figsize=(10,6))
+
+        fbmod.times = [tx/1000 for tx in fbmod.times]
+        fbmod.b_vols = [bx*1000 for bx in fbmod.b_vols]
 
         color = 'tab:red'
-        ax1_1.set_xlabel('Time (t) [ms]')
-        ax1_1.set_ylabel('Bladder Volume (V) [ml]', color=color)
+        ax1_1.set_xlabel('Time (t) [s]')
+        ax1_1.set_ylabel('Bladder Volume (V) [ul]', color=color)
         ax1_1.plot(fbmod.times, fbmod.b_vols, color=color,lw=0.5)
         ax1_1.tick_params(axis='y', labelcolor=color)
 
@@ -30,8 +35,9 @@ def plot_figure(means, stdevs, n_steps, dt, tstep=100, fbmod=None, savefig=True)
     tstop = (n_steps-1)*dt
     t = np.arange(0.0,tstop,tstep)
     ind = np.floor(t/dt).astype(np.int)
+    t = [tx/1000 for tx in t]
 
-    fig2 = plt.figure(figsize=(9,3))
+    fig2 = plt.figure(figsize=(10,6))
     plt.plot(t, means['Bladaff'][ind], color='k', label='Bladder Afferent',lw=0.5)
     plt.plot(t, means['PGN'][ind], color='g', label='PGN',lw=0.5)
     #plt.plot(t, means['PAGaff'][ind], color='r', marker='D', mfc='r', mec='r', label='PAG')
@@ -39,19 +45,19 @@ def plot_figure(means, stdevs, n_steps, dt, tstep=100, fbmod=None, savefig=True)
     plt.plot(t, means['IMG'][ind], color='r', label='IMG',lw=0.5)
     plt.plot(t, means['IND'][ind], color='b', label='IND',lw=0.5)
 
-    plt.xlabel('Time (t) [ms]')
+    plt.xlabel('Time (t) [s]')
     plt.ylabel('Neuron Firing Rate (FR) [Hz]')
     plt.legend()
     fig2.tight_layout()
 
 
-    fig3 = plt.figure(figsize=(9,3))
+    fig3 = plt.figure(figsize=(10,6))
     plt.plot(t, means['INmminus'][ind], color='r', label='INm-',lw=0.5)
     plt.plot(t, means['EUSaff'][ind], color='k', label='EUS Afferent',lw=0.5)
     # plt.plot(t, means['IND'][ind], color='r', marker='^', mfc='r', mec='r', label='IND')
     plt.plot(t, means['INmplus'][ind], color='g', label='INm+',lw=0.5)
 
-    plt.xlabel('Time (t) [ms]')
+    plt.xlabel('Time (t) [s]')
     plt.ylabel('Neuron Firing Rate (FR) [Hz]')
     plt.legend()
     fig3.tight_layout()

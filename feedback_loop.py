@@ -179,7 +179,7 @@ class FeedbackLoop(SimulatorMod):
             prev_vol = self.b_vols[-1]
         
         # To switch back from voiding to filling
-        if prev_vol < 0.13:
+        if prev_vol == v_init: #< 0.13:
             self.void = False
             self.fill = True 
             
